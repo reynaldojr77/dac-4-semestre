@@ -1,0 +1,16 @@
+# IntelliJ IDEA e arquivos gerados localmente
+.idea/
+*.iml
+out/
+build/
+target/
+*.class
+
+# Configurações e credenciais locais
+.env
+.env.*
+!.env.example
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
