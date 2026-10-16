@@ -1,4 +1,5 @@
-
+import Viewer.DashboardView;
+import javax.swing.SwingUtilities;
 import Controller.IndicadoresController;
 import Model.entity.Matricula;
 import Viewer.MainView;
@@ -6,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 public class Main {
     public static void main(String[] args){
+
+
         IndicadoresController controller = new IndicadoresController();
         MainView view = new MainView();
 
@@ -35,6 +38,21 @@ public class Main {
         // 3. Exibe os resultados na View
         view.exibirDashboard(totalMatriculas, totalAprovados, totalReprovados, totalAbandono, taxaAprovacao, taxaAbandono);
         view.exibirMatriculasPorMunicipio(porMunicipio);
+
+        // Cria e configura a interface na linha de execução do Swing.
+        SwingUtilities.invokeLater(() -> {
+
+            DashboardView dashboard = new DashboardView();
+
+            // Preenche as opções dos seletores.
+            dashboard.preencherFiltros(listaMatriculas);
+
+            // Conecta o botão e atualiza os resultados iniciais.
+            dashboard.configurarFiltros(controller, listaMatriculas);
+
+            // Mostra a janela.
+            dashboard.setVisible(true);
+        });
     }
 
 }

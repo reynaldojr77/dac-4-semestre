@@ -4,7 +4,6 @@ import Model.dao.MatriculaDAO;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import Model.dao.MatriculaDAO;
 import Model.entity.Matricula;
 public class IndicadoresController {
 
@@ -103,4 +102,20 @@ public class IndicadoresController {
                         Collectors.summingInt(Matricula::getMatriculasTotal)
                 ));
     }
+
+    public List<Matricula> filtrarRegistros(
+            List<Matricula> registros,
+            String municipio,
+            int ano
+    ) {
+
+        return registros.stream()
+                .filter(registro -> registro.getAnoReferencia() == ano)
+                .filter(registro ->
+                        "Todos os municípios".equals(municipio)
+                                || municipio.equals(registro.getNomeMunicipio())
+                )
+                .collect(Collectors.toList());
+    }
+
 }

@@ -1,6 +1,5 @@
 package Viewer;
 import Model.entity.Matricula;
-
 import java.util.List;
 import java.util.Map;
 public class MainView {
