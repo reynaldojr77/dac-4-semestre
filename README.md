@@ -1,38 +1,75 @@
 # DAC — 4º semestre
 
-Projeto acadêmico em Java para leitura e análise de matrículas escolares, desenvolvido por Reynaldo, João e Pedro no IntelliJ IDEA.
+Projeto acadêmico em Java para análise de matrículas escolares de Mato Grosso do Sul, desenvolvido por Reynaldo, João e Pedro.
 
-## Versão inicial
+## Versão atual — interface e gráficos
 
-O código e o CSV desta versão foram extraídos de `DAC 4.rar`, enviado em 14/10/2026. Os arquivos em `src/` foram preservados sem alteração. Arquivos compilados e preferências locais do IntelliJ foram excluídos da versão compartilhada.
+Atualização de 16/10/2026 a partir de `DAC 4 + DashboardView.zip`. A base inicial do João, recebida em `DAC 4.rar`, permanece no histórico do Git.
 
-A aplicação atual lê o CSV de 2026, calcula totais de matrículas, aprovados, reprovados e abandonos, calcula percentuais de aprovação e abandono sobre o total de matrículas e exibe resultados no console, incluindo matrículas por município.
+- DashboardView em Swing com cartões de matrículas, aprovados, reprovados e abandono.
+- Seletores de município e ano preenchidos a partir dos dados.
+- Botão Aplicar filtros atualizando indicadores, tabela e gráfico com o mesmo recorte.
+- Tabela de consulta por unidade escolar e ano, com rolagem e edição desativada.
+- Gráfico de até dez municípios com mais matrículas; ao selecionar uma cidade, mostra seu total.
+- Tratamento de recortes sem registros e aviso de dados parciais de 2026.
+- Saída original do resumo no console.
 
-Existe suporte no código para carregar vários arquivos, mas somente o CSV de 2026 foi recebido. Interface gráfica e integração SQL ainda não constam desta versão.
+O Main ainda carrega somente o CSV de **2026**. Carga histórica, persistência SQL e visualizações históricas de aprovação e abandono continuam pendentes. Os percentuais do controller são proporções sobre matrículas totais; sua metodologia deve ser confirmada pela equipe.
 
 ## Organização
 
 | Caminho | Conteúdo |
 | --- | --- |
-| `src/Main.java` | Inicialização da aplicação |
-| `src/Controller/` | Cálculos e coordenação da leitura |
-| `src/Model/entity/` | Modelos de dados |
-| `src/Model/dao/` | Leitura de arquivos CSV |
-| `src/Viewer/` | Exibição atual no console |
-| `src/matriculas-por-unidade-escolar-2026.csv` | Dados recebidos |
-| `sql/` | Espaço para os scripts do banco |
+| `src/Main.java` | Carga e inicialização da interface |
+| `src/Controller/` | Filtros, cálculos e coordenação da leitura |
+| `src/Model/` | Modelos e leitura CSV |
+| `src/Viewer/DashboardView.java` | Interface, indicadores, tabela e gráfico |
+| `src/Viewer/MainView.java` | Apresentação no console |
+| `src/matriculas-por-unidade-escolar-2026.csv` | CSV utilizado pelo programa |
+| `pom.xml` | JFreeChart 1.5.6 e configuração de compilação |
+| `sql/` | Espaço para scripts do banco |
 | `docs/PLANO.md` | Divisão de trabalho e pendências |
 
-## Abrir no IntelliJ IDEA
+## Preparação
 
-1. Clone este repositório pelo IntelliJ em **Get from Version Control**, ou baixe e descompacte o ZIP.
-2. Abra a pasta do projeto e configure um **JDK 23**, versão indicada na configuração do projeto original.
-3. Se o IntelliJ não reconhecer `src`, clique com o botão direito nessa pasta e escolha **Mark Directory as → Sources Root**.
-4. Execute o método `main` de `src/Main.java`.
-5. Na configuração de execução, mantenha o **Working directory** na raiz do repositório. O programa busca o CSV em `src/matriculas-por-unidade-escolar-2026.csv`.
+Use um **JDK 17 ou superior**. A compilação dos fontes desta atualização foi conferida com Java 17 e o JAR 1.5.6 do ZIP. Reynaldo confirmou a execução da interface no IntelliJ IDEA e no VS Code.
 
-Esta organização inicial foi conferida por comparação dos arquivos com o arquivo original. A compilação e a execução devem ser validadas pela equipe no IntelliJ; não foram executadas nesta preparação.
+O `pom.xml` declara `org.jfree:jfreechart:1.5.6` e mantém os fontes em `src`, sem reorganizar os pacotes. Na primeira importação, o Maven precisa de internet para obter a biblioteca. O JAR local do ZIP não precisa ser versionado.
+
+Abra a raiz que contém diretamente `src` e `pom.xml`. O diretório de execução deve ser essa mesma raiz: o programa usa o caminho relativo `src/matriculas-por-unidade-escolar-2026.csv`.
+
+## IntelliJ IDEA
+
+1. Clone o repositório ou extraia seu ZIP.
+2. Abra `pom.xml` como projeto, ou aceite carregar o projeto Maven ao abrir a raiz.
+3. Configure o JDK e aguarde a resolução das dependências.
+4. Execute o método main de `src/Main.java`.
+5. Mantenha o Working directory na raiz do repositório.
+
+## VS Code
+
+1. Instale o **Extension Pack for Java**, da Microsoft, e configure um JDK.
+2. Use File → Open Folder para abrir a raiz que contém `pom.xml` e `src`.
+3. Aguarde a importação do projeto Maven e o download das dependências.
+4. Abra `src/Main.java` e clique em Run acima do método main.
+5. Execute a partir da raiz para localizar o CSV.
+
+## Compilação pelo terminal
+
+Com JDK e Maven instalados, execute na raiz:
+
+```sh
+mvn compile
+```
+
+## Conferência rápida
+
+Com o CSV recebido, confira **199.489** matrículas no total, **46.121** para Campo Grande e **6.137** para Corumba. Ao voltar para todos os municípios, o total geral deve reaparecer sem duplicar registros.
+
+Aprovados, reprovados e abandono estão zerados no arquivo de 2026. São dados parciais: os zeros não representam resultados anuais consolidados. O gráfico compara volume de matrículas, não qualidade do ensino.
+
+Fonte oficial: https://www.dados.ms.gov.br/dataset/matriculas-por-unidade-escolar
 
 ## Trabalho em equipe
 
-Crie uma branch para cada tarefa, por exemplo `feature/interface`, `feature/historico` ou `feature/banco-sql`. Faça commits com descrições curtas e abra um pull request para revisar e integrar as alterações. Consulte as pendências em [docs/PLANO.md](docs/PLANO.md).
+Use uma branch por tarefa e pull requests para revisar a integração. Consulte [docs/PLANO.md](docs/PLANO.md). Preferências locais das IDEs e arquivos compilados permanecem fora do versionamento.
