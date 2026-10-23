@@ -1,99 +1,143 @@
-# DAC — 4º semestre
+# DAC — Indicadores Educacionais de MS
 
-Projeto acadêmico em Java para análise de matrículas escolares de Mato Grosso do Sul, desenvolvido por Reynaldo, João e Pedro.
+Projeto acadêmico do 4º semestre de Análise e Desenvolvimento de Sistemas, desenvolvido por **Reynaldo, João e Pedro**.
 
-## Versão atual — interface e gráficos
+Aplicação em Java para consultar e visualizar dados de matrículas, aprovação, reprovação e abandono escolar de Mato Grosso do Sul.
 
-Atualização de 16/10/2026, com interface gráfica desenvolvida em Swing e gráficos utilizando JFreeChart 1.5.6.
+## Funcionalidades disponíveis
 
-Funcionalidades disponíveis:
+- Carregamento dos arquivos CSV de **2024 e 2026**.
+- Interface gráfica desenvolvida com **Java Swing**.
+- Filtros por **município e ano**.
+- Cartões com totais de matrículas, aprovados, reprovados e abandono.
+- Indicadores percentuais de aprovação, reprovação e abandono.
+- Tabela de consulta por unidade escolar.
+- Gráfico de até dez municípios com mais matrículas no ano selecionado.
+- Gráfico de taxas gerais de aprovação, reprovação e abandono.
+- Atualização dos indicadores, da tabela e dos gráficos pelo botão **Aplicar filtros**.
+- Tratamento de consultas sem registros.
+- Resumo dos dados carregados no console.
 
-- Dashboard com cartões de matrículas, aprovados, reprovados e abandono.
-- Seletores de município e ano preenchidos a partir dos dados carregados.
-- Botão **Aplicar filtros** atualizando indicadores, tabela e gráfico com o mesmo recorte.
-- Tabela de consulta por unidade escolar e ano, com rolagem e edição desativada.
-- Gráfico de até dez municípios com mais matrículas; ao selecionar uma cidade, apresenta seu total.
-- Tratamento de recortes sem registros e aviso de dados parciais de 2026.
-- Saída do resumo dos indicadores no console.
+Os gráficos utilizam a biblioteca **JFreeChart 1.5.6**, incluída no repositório.
 
-O programa ainda carrega somente o CSV de **2026**. A carga histórica, a persistência SQL e as visualizações históricas de aprovação e abandono continuam pendentes.
-
-Os percentuais calculados pelo controller são proporções sobre o total de matrículas; sua metodologia deve ser confirmada pela equipe.
-
-## Organização
+## Organização do repositório
 
 | Caminho | Conteúdo |
 | --- | --- |
-| `src/Main.java` | Carga dos dados e inicialização da interface |
-| `src/Controller/` | Filtros, cálculos e coordenação da leitura |
-| `src/Model/entity/` | Modelos de dados |
-| `src/Model/dao/` | Leitura dos arquivos CSV |
-| `src/Viewer/DashboardView.java` | Interface, indicadores, tabela e gráfico |
-| `src/Viewer/MainView.java` | Apresentação no console |
-| `src/matriculas-por-unidade-escolar-2026.csv` | CSV utilizado pelo programa |
-| `lib/jfreechart-1.5.6.jar` | Biblioteca utilizada para os gráficos |
-| `sql/` | Espaço reservado aos scripts do banco |
-| `docs/PLANO.md` | Divisão de trabalho e pendências |
+| `DAC-4-main/` | Projeto Java |
+| `DAC-4-main/src/Main.java` | Carregamento dos dados e inicialização da aplicação |
+| `DAC-4-main/src/Controller/` | Filtros, cálculos e coordenação da leitura |
+| `DAC-4-main/src/Model/entity/` | Modelos de dados |
+| `DAC-4-main/src/Model/dao/` | Leitura dos arquivos CSV |
+| `DAC-4-main/src/Viewer/DashboardView.java` | Interface gráfica, indicadores, tabela e gráficos |
+| `DAC-4-main/src/Viewer/MainView.java` | Apresentação dos resultados no console |
+| `DAC-4-main/src/matriculas-por-unidade-escolar-2024.csv` | Dados de 2024 |
+| `DAC-4-main/src/matriculas-por-unidade-escolar-2026.csv` | Dados de 2026 |
+| `DAC-4-main/lib/jfreechart-1.5.6.jar` | Biblioteca dos gráficos |
+| `docs/PLANO.md` | Planejamento inicial da equipe |
+| `sql/` | Pasta reservada à documentação e aos scripts do banco de dados |
 
-## Preparação
+O arquivo `docs/PLANO.md` registra o planejamento inicial e precisa ser revisado conforme o avanço das entregas. A descrição das funcionalidades disponíveis nesta versão está neste README.
 
-Utilize um **JDK 17 ou superior**.
+## Requisitos e preparação
 
-A compilação desta versão foi conferida com Java 17 e JFreeChart 1.5.6. A execução da interface também foi confirmada por Reynaldo no IntelliJ IDEA e no VS Code.
+- **JDK 17 ou superior**.
+- IntelliJ IDEA ou VS Code com suporte a Java.
+- Biblioteca JFreeChart incluída em `DAC-4-main/lib/`.
 
-A biblioteca JFreeChart está incluída na pasta `lib` e deve ser adicionada às bibliotecas do projeto caso a IDE não a reconheça automaticamente.
+Depois de clonar ou baixar o repositório, abra na IDE a pasta **`DAC-4-main`**, que contém diretamente as pastas `src` e `lib`.
 
-Abra a pasta raiz que contém diretamente `src` e `lib`.
+**O diretório de trabalho da execução também deve ser `DAC-4-main`.**
 
-O diretório de execução deve ser essa mesma raiz, pois o programa procura o CSV pelo caminho relativo:
-
-`src/matriculas-por-unidade-escolar-2026.csv`
+O programa procura automaticamente os arquivos com extensão `.csv` diretamente na pasta `src`, usando um caminho relativo ao diretório de trabalho.
 
 ## Executar no IntelliJ IDEA
 
 1. Clone o repositório ou baixe e extraia seu ZIP.
-2. Abra a pasta raiz do projeto, que contém `src` e `lib`.
+2. No IntelliJ, abra a pasta **`DAC-4-main`**.
 3. Configure um JDK 17 ou superior em **File → Project Structure → Project**.
-4. Caso `src` não esteja reconhecida como pasta de código, clique nela com o botão direito e selecione **Mark Directory as → Sources Root**.
-5. Em **File → Project Structure → Modules → Dependencies**, clique em **+ → JARs or Directories** e selecione `lib/jfreechart-1.5.6.jar`, caso ainda não esteja associado.
+4. Se necessário, clique com o botão direito em `src` e selecione **Mark Directory as → Sources Root**.
+5. Em **File → Project Structure → Modules → Dependencies**, adicione `lib/jfreechart-1.5.6.jar` por **+ → JARs or Directories**, caso a biblioteca ainda não esteja associada.
 6. Abra `src/Main.java` e execute o método `main`.
-7. Se o CSV não for encontrado, confira em **Run → Edit Configurations** se o **Working directory** aponta para a raiz do projeto.
+
+Se aparecer a mensagem de que nenhum CSV foi encontrado, confira em **Run → Edit Configurations** se o campo **Working directory** aponta para a pasta `DAC-4-main`.
 
 ## Executar no VS Code
 
 1. Instale o **Extension Pack for Java**, da Microsoft, e configure um JDK 17 ou superior.
-2. Use **File → Open Folder** para abrir a pasta raiz que contém diretamente `src` e `lib`.
+2. Use **File → Open Folder** para abrir a pasta **`DAC-4-main`**.
 3. Aguarde o suporte a Java terminar de carregar.
-4. Confira se o JFreeChart aparece em **Java Projects → Referenced Libraries**. Os arquivos JAR da pasta `lib` normalmente são reconhecidos automaticamente.
-5. Se a biblioteca não aparecer, utilize o botão **+** de **Referenced Libraries** e selecione `lib/jfreechart-1.5.6.jar`.
+4. Confira se o JFreeChart aparece em **Java Projects → Referenced Libraries**.
+5. Se necessário, use o botão **+** de **Referenced Libraries** para adicionar `lib/jfreechart-1.5.6.jar`.
 6. Abra `src/Main.java` e clique em **Run**, acima do método `main`.
 
-Execute a partir da raiz do projeto para que o programa encontre o CSV.
+Mantenha `DAC-4-main` como diretório de trabalho para que os arquivos CSV sejam encontrados.
+
+## Dados e interpretação dos indicadores
+
+A versão atual inclui arquivos de **2024 e 2026**, obtidos no Portal de Dados Abertos de Mato Grosso do Sul.
+
+Fonte: [Matrículas por unidade escolar — Dados Abertos de MS](https://www.dados.ms.gov.br/dataset/matriculas-por-unidade-escolar)
+
+O dashboard apresenta os resultados do **ano e município selecionados**. O resumo inicial do console considera o conjunto de arquivos carregados e pode apresentar totais diferentes dos exibidos na interface.
+
+### Dados de 2026
+
+No CSV de 2026 incluído nesta versão, os campos de aprovados, reprovados e abandono contêm valores iguais a zero.
+
+Por isso, os respectivos totais e percentuais também aparecem zerados na aplicação, e as barras do gráfico de taxas podem não ficar visíveis.
+
+Esses zeros fazem parte do arquivo de origem. Como os dados de 2026 são parciais, não devem ser interpretados como resultados anuais consolidados.
+
+### Cálculo dos percentuais
+
+O código calcula cada percentual dividindo o total do indicador pelo total de matrículas do recorte selecionado e multiplicando por 100.
+
+Exemplo:
+
+`Percentual de aprovação = (total de aprovados / total de matrículas) × 100`
+
+A mesma lógica é utilizada para reprovação e abandono. Quando o total de matrículas é zero, o cálculo retorna zero.
+
+A metodologia deve ser conferida pela equipe antes de apresentar esses percentuais como taxas oficiais de rendimento escolar.
 
 ## Conferência rápida
 
-Com o CSV de 2026 utilizado nesta versão, confira:
+Selecione o ano **2026**, escolha o município indicado e clique em **Aplicar filtros**:
 
-| Município | Total de matrículas |
-| --- | ---: |
-| Todos os municípios | 199.489 |
-| Campo Grande | 46.121 |
-| Corumba | 6.137 |
+| Ano | Município | Total esperado de matrículas |
+| --- | --- | ---: |
+| 2026 | Todos os municípios | 199.489 |
+| 2026 | Campo Grande | 46.121 |
 
-Ao alterar o município e clicar em **Aplicar filtros**, os cartões, a tabela e o gráfico devem acompanhar a seleção.
+Confira também:
 
-Ao retornar para **Todos os municípios**, o total geral deve reaparecer. Clicar novamente sem alterar os filtros não deve duplicar linhas nem valores.
+- Ao mudar os filtros, os cartões, a tabela e os gráficos devem acompanhar a seleção.
+- Ao aplicar novamente os mesmos filtros, as linhas e os valores não devem ser duplicados.
+- As abas **Tabela**, **Gráfico por município** e **Taxas gerais** devem estar disponíveis.
+- Em 2024, os indicadores de aprovação, reprovação e abandono devem refletir os valores presentes no CSV.
+- Em 2026, esses indicadores permanecem zerados conforme o arquivo de origem.
 
-Aprovados, reprovados e abandono estão zerados no arquivo de 2026. São dados parciais: esses zeros não devem ser interpretados como resultados anuais consolidados.
+## Banco de dados e próximas entregas
 
-O gráfico atual compara o volume de matrículas entre municípios.
+Nesta versão do repositório, a aplicação lê os dados diretamente dos arquivos CSV. A integração Java com o banco de dados ainda está pendente.
 
-Fonte oficial: [Dados Abertos de Mato Grosso do Sul — Matrículas por unidade escolar](https://www.dados.ms.gov.br/dataset/matriculas-por-unidade-escolar)
+Próximas entregas:
 
-## Trabalho em equipe
+- Incluir os scripts e as instruções do banco na pasta `sql/`.
+- Integrar as consultas do banco ao código Java.
+- Ampliar o histórico com os demais anos disponíveis.
+- Conferir a consistência dos dados e a metodologia dos indicadores.
+- Atualizar o planejamento e a documentação conforme as entregas da equipe.
 
-Utilize uma branch por tarefa e pull requests para revisar e integrar as alterações.
+## Equipe e colaboração
 
-Consulte [docs/PLANO.md](docs/PLANO.md) para acompanhar a divisão de trabalho e as pendências.
+| Integrante | Frente principal |
+| --- | --- |
+| Reynaldo | Interface, filtros, indicadores e gráficos |
+| João | Código Java, consultas e integração |
+| Pedro | Estrutura do banco, importação e consultas SQL |
 
-Preferências locais das IDEs e arquivos compilados permanecem fora do versionamento.
+Utilize uma branch por tarefa e abra pull requests para revisar e integrar as alterações à `main`.
+
+Preferências locais das IDEs e arquivos gerados pela compilação devem permanecer fora do versionamento, conforme o `.gitignore`.
