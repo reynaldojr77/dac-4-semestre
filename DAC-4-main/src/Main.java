@@ -19,10 +19,11 @@ public class Main {
         List<String> caminhosCSV = listarArquivosCsvPadrao();
 
         if (caminhosCSV.isEmpty()) {
-            caminhosCSV = Arrays.asList(
-                    "C:\\Users\\ra199312\\Downloads\\DAC 4\\DAC 4\\src\\matriculas-por-unidade-escolar-2024.csv",
-                    "C:\\Users\\ra199312\\Downloads\\DAC 4\\DAC 4\\src\\matriculas-por-unidade-escolar-2026.csv"
+            view.exibirMensagemErro(
+                    "Nenhum CSV encontrado na pasta src. "
+                            + "Confira se o diretório de trabalho é a pasta DAC-4-main."
             );
+            return;
         }
 
         System.out.println("Carregando dados dos arquivos: " + caminhosCSV + "...");
@@ -67,7 +68,7 @@ public class Main {
 
     private static List<String> listarArquivosCsvPadrao() {
         List<String> caminhos = new ArrayList<>();
-        File pasta = new File("DAC 4/DAC 4/src");
+        File pasta = new File("src");
 
         if (!pasta.exists() || !pasta.isDirectory()) {
             return caminhos;
