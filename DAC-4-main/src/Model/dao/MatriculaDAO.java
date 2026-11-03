@@ -6,9 +6,75 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 public class MatriculaDAO {
+    /** Consulta SQL -> objetos do modelo. Não mistura registros do banco e dos CSVs. */
+    public List<Matricula> carregarDoBanco() throws SQLException {
+        return carregarDoBanco(ConexaoBanco.localizarBanco());
+    }
+
+    public List<Matricula> carregarDoBanco(Path banco) throws SQLException {
+        String sql = """
+                SELECT r.id_origem, r.ano_referencia,
+                       m.nome AS municipio, u.nome AS escola,
+                       r.matriculas_total, r.matricula_inicial, r.matricula_apos_censo,
+                       r.transferidos, r.cancelados, r.falecido, r.abandono,
+                       r.aprovados, r.reprovados, r.cursando, r.outras_situacoes
+                FROM registro_educacional AS r
+                JOIN unidade_escolar AS u ON u.id = r.escola_id
+                JOIN municipio AS m ON m.id = u.municipio_id
+                ORDER BY r.ano_referencia, m.nome, u.nome, r.id
+                """;
+        List<Matricula> registros = new ArrayList<>();
+        try (Connection conexao = ConexaoBanco.abrirConexao(banco);
+             PreparedStatement consulta = conexao.prepareStatement(sql)) {
+            consulta.setQueryTimeout(30);
+            try (ResultSet resultado = consulta.executeQuery()) {
+                while (resultado.next()) {
+                    registros.add(new Matricula(
+                            numeroObrigatorio(resultado, "id_origem"),
+                            numeroObrigatorio(resultado, "ano_referencia"),
+                            resultado.getString("municipio"), resultado.getString("escola"),
+                            numeroObrigatorio(resultado, "matriculas_total"),
+                            numeroObrigatorio(resultado, "matricula_inicial"),
+                            numeroObrigatorio(resultado, "matricula_apos_censo"),
+                            numeroObrigatorio(resultado, "transferidos"),
+                            numeroObrigatorio(resultado, "cancelados"),
+                            numeroObrigatorio(resultado, "falecido"),
+                            numeroObrigatorio(resultado, "abandono"),
+                            numeroObrigatorio(resultado, "aprovados"),
+                            numeroObrigatorio(resultado, "reprovados"),
+                            numeroObrigatorio(resultado, "cursando"),
+                            numeroObrigatorio(resultado, "outras_situacoes")));
+                }
+            }
+            try (PreparedStatement contagem = conexao.prepareStatement("SELECT COUNT(*) FROM registro_educacional");
+                 ResultSet resultado = contagem.executeQuery()) {
+                if (resultado.next() && resultado.getLong(1) != registros.size()) {
+                    throw new SQLException("Há registros sem escola ou município correspondente. "
+                            + "A carga foi interrompida para evitar apresentar totais incompletos.");
+                }
+            }
+        }
+        return registros;
+    }
+
+    private int numeroObrigatorio(ResultSet resultado, String coluna) throws SQLException {
+        Object valor = resultado.getObject(coluna);
+        if (!(valor instanceof Number numero) || numero.doubleValue() != numero.longValue()
+                || numero.longValue() < 0 || numero.longValue() > Integer.MAX_VALUE) {
+            throw new SQLException("Valor ausente ou inválido na coluna " + coluna
+                    + ". A carga foi interrompida; o valor não foi convertido em zero.");
+        }
+        return numero.intValue();
+    }
+
     /**
      * Lê um arquivo CSV de matrículas e retorna a lista de objetos Matricula.
      * @param caminhoArquivo Caminho relativo ou absoluto do arquivo CSV.

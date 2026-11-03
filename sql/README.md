@@ -1,11 +1,9 @@
-# Banco de dados
+# Banco SQLite
 
-Pasta reservada para o trabalho SQL de Pedro. Nenhum script SQL foi recebido na versão inicial.
+O arquivo usado é ../DAC-4-main/database/dac_ods4.db, fornecido por Pedro e preservado sem alterações. Não precisa instalar PostgreSQL nem criar tabelas para executar o sistema. Pode ser inspecionado no DB Browser for SQLite.
 
-Sugestão de organização quando os scripts estiverem disponíveis:
+A aplicação abre somente para leitura e consulta municipio, unidade_escolar e registro_educacional. O resultado vira List<Matricula>; os filtros e cálculos permanecem no controller. Consultas para alimentar a interface estão em MatriculaDAO.java.
 
-- `01_schema.sql`: criação de tabelas e restrições.
-- `02_dados.sql`: carga de dados, se aplicável.
-- `03_consultas.sql`: consultas usadas pelos indicadores.
+A conexão interrompe a carga em caso de coluna quantitativa ausente/inválida, erro SQL ou perda de registros no JOIN. Não usa CSV como fallback nem cria um banco substituto.
 
-Documentar aqui o SGBD escolhido, a versão e a ordem de execução. Credenciais devem ficar em configuração local ignorada pelo Git.
+Pedro deve manter o procedimento de coleta/importação para reconstruir o banco; o arquivo pronto não contém necessariamente o script original.

@@ -2,8 +2,11 @@ package Controller;
 
 import Model.dao.MatriculaDAO;
 import Model.entity.Matricula;
+import Model.entity.ResumoAnual;
+import Model.entity.ComparacaoAnos;
 
 import java.util.List;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,6 +16,10 @@ public class IndicadoresController {
 
     public IndicadoresController(){
         this.matriculaDAO = new MatriculaDAO();
+    }
+
+    public List<Matricula> carregarDadosDoBanco() throws SQLException {
+        return matriculaDAO.carregarDoBanco();
     }
 
     /**
@@ -107,6 +114,24 @@ public class IndicadoresController {
                         Matricula::getNomeMunicipio,
                         Collectors.summingInt(Matricula::getMatriculasTotal)
                 ));
+    }
+
+    public ResumoAnual resumirAno(List<Matricula> registros, String municipio, int ano) {
+        List<Matricula> filtrados = filtrarRegistros(registros, municipio, ano);
+        int total = calcularTotalMatriculas(filtrados);
+        return new ResumoAnual(ano, filtrados.size(), total,
+                calcularTotalAprovados(filtrados), calcularTotalReprovados(filtrados),
+                calcularTotalAbandono(filtrados),
+                filtrados.stream().mapToInt(Matricula::getCursando).sum(),
+                total == 0 ? null : calcularTaxaAprovacaoPercentual(filtrados),
+                total == 0 ? null : calcularTaxaReprovacaoPercentual(filtrados),
+                total == 0 ? null : calcularTaxaAbandonoPercentual(filtrados));
+    }
+
+    public ComparacaoAnos compararAnos(List<Matricula> registros, String municipio,
+                                       int anoBase, int anoComparado) {
+        return new ComparacaoAnos(resumirAno(registros, municipio, anoBase),
+                resumirAno(registros, municipio, anoComparado));
     }
 
     public List<Matricula> filtrarRegistros(
