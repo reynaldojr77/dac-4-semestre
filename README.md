@@ -4,12 +4,12 @@ Projeto do 4º semestre de **Análise e Desenvolvimento de Sistemas** da **Unive
 
 ## Equipe
 
-- Alexandre
-- Henrique
-- João Victor
-- Lucatonni
-- Pedro Henrique
-- Reynaldo
+- Alexandre César Del Grossi
+- Henrique Vilani
+- João Victor Barbosa
+- Lucatonni Espindola
+- Pedro Henrique Vieira
+- Reynaldo Garcia
 
 ## Como executar
 
