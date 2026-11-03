@@ -1,145 +1,90 @@
-# DAC — Indicadores Educacionais de MS com SQLite
+# DAC — Indicadores Educacionais de Mato Grosso do Sul
 
-Projeto acadêmico do 4º semestre de Análise e Desenvolvimento de Sistemas, com sistema desenvolvido por **Reynaldo, João e Pedro**.
+Projeto do 4º semestre de **Análise e Desenvolvimento de Sistemas** da **Universidade Católica Dom Bosco (UCDB)**, relacionado ao **ODS 4 — Educação de Qualidade**. O sistema reúne dados públicos de matrículas da rede estadual de Mato Grosso do Sul em um painel para consultar indicadores por município e acompanhar diferenças entre anos.
 
-Aplicação em Java para consultar e comparar dados de matrículas, aprovação, reprovação e abandono escolar de Mato Grosso do Sul. Esta versão consulta o banco SQLite do Pedro, sem carregar os CSVs ao iniciar. Mantém o painel, os filtros e a ordenação, e acrescenta a comparação entre anos. Não inclui comparação entre municípios nem filtro por escola.
+## Equipe
 
-## Requisitos
+- Alexandre
+- Henrique
+- João Victor
+- Lucatonni
+- Pedro Henrique
+- Reynaldo
 
-- **Java 17 ou superior**. Para recompilar, é preciso um **JDK** 17 ou superior.
-- Nada mais precisa ser instalado: o banco, as bibliotecas e o aplicativo compilado estão no repositório. Não é usado Maven nem servidor SQL.
+## Como executar
 
-Clone o repositório ou baixe e extraia o ZIP inteiro, mantendo a estrutura de pastas:
+Você precisa de **Java 17 ou superior**. Para recompilar ou executar pela IDE, use um **JDK 17 ou superior**. O banco SQLite, as bibliotecas e o aplicativo compilado já vêm no repositório. Mantenha a estrutura de pastas ao baixar o projeto.
+
+**No Windows**, baixe o repositório em **Code → Download ZIP**, extraia o arquivo e abra `DAC-4-main/executar.bat`. O script procura o Java em `JAVA_HOME`, no `PATH` e na pasta de JDKs do IntelliJ.
+
+**No Linux ou macOS**, clone o repositório e execute o JAR.
 
 ```sh
 git clone https://github.com/reynaldojr77/dac-4-semestre.git
 cd dac-4-semestre/DAC-4-main
-```
-
-## Executar no Windows
-
-1. Abra a pasta `DAC-4-main`.
-2. Execute `executar.bat`.
-
-O lançador procura o Java em `JAVA_HOME`, no `PATH` ou nos JDKs do IntelliJ em `%USERPROFILE%\.jdks`. Se não encontrar, configure Java 17 ou superior ou execute pelo IntelliJ.
-
-## Executar no Linux ou macOS
-
-Na pasta `DAC-4-main`:
-
-```sh
 java -jar dac.jar
 ```
 
-## Conferir pelo terminal, sem abrir a interface
+Se já tiver baixado o ZIP, abra o terminal na pasta `DAC-4-main` e execute apenas `java -jar dac.jar`.
 
-Na pasta `DAC-4-main`, em qualquer sistema:
+### Executar a partir do código-fonte
+
+- No **IntelliJ IDEA**, abra `DAC-4-main` como projeto, selecione o JDK, marque `src` como **Sources Root** se necessário, adicione todos os JARs de `lib` em **Project Structure → Modules → Dependencies** e execute a classe `Main`.
+- No **VS Code**, abra `DAC-4-main` com o **Extension Pack for Java**, selecione o JDK, confira os JARs de `lib` em **Java Projects → Referenced Libraries** e execute `src/Main.java`.
+
+Para gerar um novo `dac.jar` após editar os fontes, use `compilar.bat` no Windows. No Linux ou macOS, execute estes comandos dentro de `DAC-4-main`.
+
+```sh
+mkdir -p build/classes
+find src -name '*.java' | sed 's/.*/"&"/' > build/fontes.txt
+javac --release 17 -encoding UTF-8 -cp 'lib/*' -d build/classes @build/fontes.txt
+jar --create --file dac.jar --manifest manifest.mf -C build/classes .
+```
+
+## Como usar o painel
+
+Selecione um **município** ou **Todos os municípios**, escolha o **Ano do painel** e clique em **Aplicar filtros**. Os cartões mostram o total de matrículas e os totais e percentuais de aprovação, reprovação e abandono.
+
+| Aba | O que mostra |
+| --- | --- |
+| **Tabela** | Registros por unidade escolar. Clique nos cabeçalhos para ordenar. |
+| **Gráfico por município** | Até dez municípios com mais matrículas no ano ou o total do município selecionado. |
+| **Taxas gerais** | Percentuais de aprovação, reprovação e abandono para o recorte selecionado. |
+| **Comparação entre anos** | Resumo, diferenças e gráfico de percentuais para dois anos no mesmo recorte geográfico. |
+
+Na comparação, escolha o **ano-base** e o **ano comparado** independentemente do ano do painel. O sistema mostra a variação de matrículas em quantidade e em porcentagem sobre o ano-base. As diferenças entre percentuais são expressas em **pontos percentuais**. Quando falta um denominador válido, o percentual correspondente fica indisponível.
+
+## Fonte e interpretação dos dados
+
+O banco contém **3.703 registros**, distribuídos por **79 municípios** nos anos de **2018 a 2024 e 2026**. O ano de **2025** está ausente na fonte consultada pelo grupo. Cada registro representa dados agregados por unidade escolar. [Matrículas por unidade escolar — Portal de Dados Abertos de MS](https://www.dados.ms.gov.br/dataset/matriculas-por-unidade-escolar)
+
+Os percentuais de aprovação, reprovação e abandono dividem o total de cada situação pelo total de matrículas do recorte. Esses percentuais descrevem os registros da base consultada. As taxas oficiais de rendimento escolar podem usar outra metodologia.
+
+- Em **2024**, 184.949 das 220.926 matrículas constam como **cursando**.
+- Em **2026**, aprovação, reprovação e abandono estão zerados nos registros disponíveis. A maior parte das matrículas ainda consta como **cursando**, por isso os valores devem ser lidos como parciais.
+- O abandono aparece zerado nos anos disponíveis a partir de **2020**. A base, por si só, não permite concluir que deixou de ocorrer.
+
+## Banco e estrutura do projeto
+
+O aplicativo abre `DAC-4-main/database/dac_ods4.db` em modo somente leitura. Na inicialização, `MatriculaDAO` consulta as tabelas de municípios, unidades escolares e registros educacionais. O controlador aplica os filtros e calcula os indicadores, e a interface exibe os resultados. Os CSVs de 2024 e 2026 servem para conferência da fonte.
+
+| Caminho | Conteúdo |
+| --- | --- |
+| [DAC-4-main/src/](DAC-4-main/src/) | Código Java da aplicação, incluindo conexão, consultas, controlador e interface Swing. |
+| [DAC-4-main/database/](DAC-4-main/database/) | Banco SQLite usado pelo painel. |
+| [DAC-4-main/lib/](DAC-4-main/lib/) | Bibliotecas SQLite JDBC, JFreeChart e SLF4J. |
+| [DAC-4-main/LEIA-ME.md](DAC-4-main/LEIA-ME.md) | Início rápido e instruções para a IDE. |
+| [docs/TESTES.md](docs/TESTES.md) | Roteiro de testes e valores de referência. |
+| [sql/](sql/) | Documentação do banco e consultas SQL de referência. |
+
+Para usar uma cópia do banco em outro local, configure a opção de VM `-Ddac.banco=CAMINHO` ou a variável de ambiente `DAC_BANCO`.
+
+## Como verificar a carga
+
+Na pasta `DAC-4-main`, rode o comando abaixo para consultar o banco sem abrir o painel.
 
 ```sh
 java -jar dac.jar --verificar-banco
 ```
 
-O resultado deve mostrar 3.703 registros, os anos 2018–2024 e 2026, e terminar com `Consulta ao SQLite concluída. Nenhum CSV foi carregado.`
-
-## Executar pelo IntelliJ IDEA
-
-1. Abra `DAC-4-main` como projeto e selecione JDK 17 ou superior em **File → Project Structure → Project**.
-2. Se necessário, clique com o botão direito em `src` e selecione **Mark Directory as → Sources Root**.
-3. Em **File → Project Structure → Modules → Dependencies**, adicione **todos** os JARs de `lib` usando **+ → JARs or Directories**.
-4. Execute `src/Main.java`. Se a IDE pedir, selecione a classe `Main`.
-
-## Executar no VS Code
-
-1. Instale o **Extension Pack for Java**, da Microsoft, e configure um JDK 17 ou superior.
-2. Use **File → Open Folder** para abrir a pasta `DAC-4-main`.
-3. Confira se os quatro JARs de `lib` aparecem em **Java Projects → Referenced Libraries**. Se necessário, adicione-os pelo botão **+**.
-4. Abra `src/Main.java` e clique em **Run**, acima do método `main`.
-
-Bibliotecas: `jfreechart-1.5.6.jar`, `sqlite-jdbc-3.54.1.0.jar`, `slf4j-api-1.7.36.jar` e `slf4j-nop-1.7.36.jar`.
-
-## Localização do banco
-
-O código procura o banco a partir da localização do JAR ou das classes e do diretório de execução, incluindo pastas ancestrais da saída da IDE. Mantenha `database` dentro de `DAC-4-main`. Para um caminho personalizado, configure a opção de VM `-Ddac.banco=CAMINHO` ou a variável `DAC_BANCO`; valores explícitos inválidos produzem erro, sem recorrer a outro arquivo.
-
-## Dados disponíveis
-
-- 3.703 registros, 79 municípios e 599 cadastros de escolas.
-- Anos: 2018, 2019, 2020, 2021, 2022, 2023, 2024 e 2026.
-- 2025 está ausente na fonte informada pelo grupo e não recebe dados artificiais.
-- O arquivo do Pedro foi copiado sem alteração de estrutura ou valores.
-- A conexão usa somente leitura; o programa não cria banco vazio nem importa CSV automaticamente.
-- Os CSVs de 2024 e 2026 permanecem em `src` apenas como fontes de conferência. Não são necessários para executar esta versão.
-
-Fonte: [Matrículas por unidade escolar — Dados Abertos de MS](https://www.dados.ms.gov.br/dataset/matriculas-por-unidade-escolar)
-
-A carga acontece uma vez pelo DAO, retornando `List<Matricula>`. O controller continua responsável pelos filtros e cálculos, e a interface apresenta os resultados. O identificador de origem do CSV é preservado em `Matricula.id` e só é único em conjunto com o ano.
-
-## Filtros e comparação
-
-O painel usa município e **Ano do painel**. A tabela começa ordenada por matrículas e permite ordenar pelos cabeçalhos. As abas **Tabela**, **Gráfico por município**, **Taxas gerais** e **Comparação entre anos** acompanham a seleção.
-
-A aba **Comparação entre anos** usa o município selecionado acima e dois anos independentes do Ano do painel. Diferença = ano comparado menos ano base. A tabela mostra totais, variação de matrículas em quantidade e porcentagem e diferenças dos percentuais em pontos percentuais. A visualização gráfica fica em **Gráfico de percentuais**.
-
-## Interpretação dos indicadores
-
-Cada percentual é calculado sobre as matrículas do recorte selecionado:
-
-`Percentual de aprovação = (total de aprovados / total de matrículas) × 100`
-
-A mesma lógica é usada para reprovação e abandono. Esses valores não foram redefinidos como taxas oficiais de rendimento e a metodologia deve ser conferida pela equipe antes de apresentá-los dessa forma.
-
-Alunos cursando, dados parciais e abandono zerado na fonte devem ser considerados ao interpretar o histórico:
-
-- Em **2024**, a maior parte dos registros consta como cursando (184.949 de 220.926 matrículas), com apenas 3.484 aprovados e 1.031 reprovados.
-- Em **2026**, aprovados, reprovados e abandono estão zerados, e as barras do gráfico de taxas podem não ficar visíveis. Os dados são parciais e não devem ser lidos como resultados anuais consolidados.
-- De **2020 a 2024**, o abandono está zerado.
-
-Esses valores fazem parte dos arquivos de origem. Recortes sem registros não são tratados como zero. Base zero impede variação percentual e percentuais sem denominador ficam indisponíveis na comparação.
-
-## Alterar e recompilar
-
-O IntelliJ recompila os fontes ao executar `Main`. Para atualizar o `dac.jar` depois de editar os fontes, execute `compilar.bat` no Windows ou, no Linux e macOS, na pasta `DAC-4-main`:
-
-```sh
-mkdir -p build/classes
-javac --release 17 -encoding UTF-8 -cp "lib/*" -d build/classes $(find src -name '*.java')
-jar --create --file dac.jar --manifest manifest.mf -C build/classes .
-```
-
-Executar um JAR antigo não incorpora alterações nos fontes.
-
-## Conferência
-
-Use [docs/TESTES.md](docs/TESTES.md). O console informa a origem SQLite, a quantidade de registros e o resumo de cada ano. Não soma todos os anos como se representassem um único ano letivo.
-
-## Organização
-
-| Caminho | Conteúdo |
-| --- | --- |
-| `DAC-4-main/src/Main.java` | Carga SQL e inicialização |
-| `DAC-4-main/src/Model/dao/ConexaoBanco.java` | Localização e conexão SQLite de leitura |
-| `DAC-4-main/src/Model/dao/MatriculaDAO.java` | Consulta com JOIN e mapeamento dos 15 campos; leitura CSV preservada para conferência |
-| `DAC-4-main/src/Model/entity/` | Modelos de dados e resultados da comparação |
-| `DAC-4-main/src/Controller/IndicadoresController.java` | Filtros, totais e comparação |
-| `DAC-4-main/src/Viewer/DashboardView.java` | Interface e gráficos |
-| `DAC-4-main/src/Viewer/MainView.java` | Saída de console da versão anterior, sem uso na inicialização atual |
-| `DAC-4-main/database/dac_ods4.db` | Banco do Pedro |
-| `DAC-4-main/lib/` | Bibliotecas incluídas |
-| `DAC-4-main/dac.jar` | Aplicativo compilado para Java 17 |
-| `DAC-4-main/executar.bat`, `DAC-4-main/compilar.bat` | Execução e recompilação no Windows |
-| `docs/` | Plano e testes manuais |
-| `sql/` | Documentação e consulta de referência |
-
-Driver SQLite JDBC: [xerial/sqlite-jdbc](https://github.com/xerial/sqlite-jdbc) (3.54.1.0, distribuição com bibliotecas nativas para Windows, Linux e macOS).
-
-## Equipe e colaboração
-
-| Integrante | Frente principal |
-| --- | --- |
-| Reynaldo | Interface, filtros, indicadores e gráficos |
-| João | Código Java, consultas e integração |
-| Pedro | Estrutura do banco, importação e consultas SQL |
-
-Utilize uma branch por tarefa e abra pull requests para revisar e integrar as alterações à `main`.
-
-Preferências locais das IDEs e arquivos gerados pela compilação devem permanecer fora do versionamento, conforme o `.gitignore`.
+A saída deve listar **3.703 registros** e os **oito anos disponíveis**. Para uma conferência rápida pela interface, selecione **2026**. O painel deve mostrar **199.489 matrículas** para todos os municípios e **46.121** para Campo Grande. Para os demais cenários, consulte o [roteiro de testes](docs/TESTES.md).
